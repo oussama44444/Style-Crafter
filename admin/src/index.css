@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: Outfit;
+}
+
+
+select,input,textarea{
+    border:1px solid #c2c2c2;
+    outline-color: black;
+    border-radius:4px;
+}
+.active {
+ background-color:#c544 ;
+ border-color:#c586A5
+}
+body {
+  background: #F0F0EFff;
+}
