@@ -8,7 +8,7 @@ import { FiUpload, FiX, FiPlus, FiTrash2, FiFolder, FiTag, FiDollarSign, FiGrid,
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
-  const [image2, setImage2] = useState(false);
+  const [image2, setImage2] useState(false);
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
 
@@ -28,7 +28,6 @@ const Add = ({ token }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // FIX: Changed from /api/category to /api/categories
         const res = await axios.get(`${backendUrl}/api/categories`);
         setCategories(res.data.categories);
         if (res.data.categories.length > 0) {
@@ -104,66 +103,68 @@ const Add = ({ token }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+        <div className="mb-4 sm:mb-6 md:mb-8 text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-1 sm:mb-2">
             Add New Product
           </h1>
-          <p className="text-gray-500">Create a new product for your collection</p>
+          <p className="text-sm sm:text-base text-gray-500">Create a new product for your collection</p>
         </div>
 
-        <form onSubmit={onSubmitHandler} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+        <form onSubmit={onSubmitHandler} className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 md:space-y-8">
           {/* Color Variations Toggle */}
           <div className="flex justify-end">
             <button
               type='button'
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
+              className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ${
                 showColors 
                   ? 'bg-red-500 hover:bg-red-600 text-white shadow-md' 
                   : 'bg-gradient-to-r from-gray-800 to-gray-700 text-white hover:from-gray-900 hover:to-gray-800 shadow-md'
               }`}
               onClick={() => setShowColors(v => !v)}
             >
-              <FiGrid />
+              <FiGrid size={16} />
               {showColors ? 'Disable Color Variations' : 'Enable Color Variations'}
             </button>
           </div>
 
           {/* Image Upload Section */}
-          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 hover:border-gray-400 transition-colors">
+          <div className="border-2 border-dashed border-gray-300 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-gray-400 transition-colors">
             {showColors ? (
-              <div className='space-y-6'>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Color Variants</h3>
+              <div className='space-y-4 sm:space-y-6'>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-4">Color Variants</h3>
                 {colorVariants.map((variant, idx) => (
-                  <div key={idx} className='bg-gray-50 rounded-xl p-6 space-y-4'>
-                    <div className='flex items-center justify-between flex-wrap gap-4'>
-                      <div className="flex items-center gap-3">
+                  <div key={idx} className='bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4'>
+                    <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4'>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                         <span className="font-medium text-gray-700">Color:</span>
-                        <HexColorPicker 
-                          color={variant.color} 
-                          onChange={color => {
-                            setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color } : v));
-                          }} 
-                        />
-                        <input 
-                          type='text' 
-                          value={variant.color} 
-                          onChange={e => setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color: e.target.value } : v))} 
-                          className='w-28 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent'
-                        />
+                        <div className="flex flex-wrap items-center gap-2">
+                          <HexColorPicker 
+                            color={variant.color} 
+                            onChange={color => {
+                              setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color } : v));
+                            }} 
+                          />
+                          <input 
+                            type='text' 
+                            value={variant.color} 
+                            onChange={e => setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color: e.target.value } : v))} 
+                            className='w-24 sm:w-28 border border-gray-300 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-sm'
+                          />
+                        </div>
                       </div>
                       <button 
                         type='button' 
-                        className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2'
+                        className='bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 text-sm w-full sm:w-auto justify-center'
                         onClick={() => setColorVariants(cv => cv.filter((_, i) => i !== idx))}
                       >
-                        <FiTrash2 /> Remove
+                        <FiTrash2 size={14} /> Remove
                       </button>
                     </div>
                     
-                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
                       {[0,1,2,3].map(imgIdx => (
                         <label key={imgIdx} className="cursor-pointer group">
                           <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
@@ -173,7 +174,7 @@ const Add = ({ token }) => {
                               alt={`color ${idx} image ${imgIdx}`}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                              <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                              <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
                             </div>
                           </div>
                           <input
@@ -192,7 +193,7 @@ const Add = ({ token }) => {
                 ))}
                 <button 
                   type='button' 
-                  className='w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md'
+                  className='w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md text-sm sm:text-base'
                   onClick={() => setColorVariants(cv => [...cv, { color: '#000000', images: [null, null, null, null] }])}
                 >
                   <FiPlus /> Add Color Variant
@@ -200,8 +201,8 @@ const Add = ({ token }) => {
               </div>
             ) : (
               <div>
-                <p className='text-gray-700 font-medium mb-3'>Product Images</p>
-                <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+                <p className='text-gray-700 font-medium mb-2 sm:mb-3 text-sm sm:text-base'>Product Images</p>
+                <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
                   {[image1, image2, image3, image4].map((img, index) => (
                     <label key={index} className="cursor-pointer group">
                       <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
@@ -211,7 +212,7 @@ const Add = ({ token }) => {
                           alt={`product ${index + 1}`}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                          <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                          <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={20} />
                         </div>
                       </div>
                       <input
@@ -231,16 +232,16 @@ const Add = ({ token }) => {
           </div>
 
           {/* Product Details Grid */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Product Name */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FiHash /> Product Name
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <FiHash size={16} /> Product Name
               </label>
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
-                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all'
+                className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all text-sm sm:text-base'
                 type="text"
                 placeholder="e.g., Classic Denim Jacket"
                 required
@@ -249,11 +250,11 @@ const Add = ({ token }) => {
 
             {/* Description */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Product Description</label>
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Product Description</label>
               <textarea
                 onChange={(e) => setDescription(e.target.value)}
                 value={description}
-                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all resize-none'
+                className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all resize-none text-sm sm:text-base'
                 rows="4"
                 placeholder="Describe your product..."
                 required
@@ -262,13 +263,13 @@ const Add = ({ token }) => {
 
             {/* Category */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FiFolder /> Category
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <FiFolder size={16} /> Category
               </label>
               <select
                 onChange={(e) => setCategory(e.target.value)}
                 value={category}
-                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white'
+                className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-sm sm:text-base'
               >
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat.name}>{cat.name}</option>
@@ -278,13 +279,13 @@ const Add = ({ token }) => {
 
             {/* SubCategory */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FiTag /> Subcategory
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <FiTag size={16} /> Subcategory
               </label>
               <select
                 onChange={(e) => setSubCategory(e.target.value)}
                 value={subCategory}
-                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white'
+                className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-sm sm:text-base'
               >
                 {subCategories.map((type) => (
                   <option key={type} value={type}>{type}</option>
@@ -294,13 +295,13 @@ const Add = ({ token }) => {
 
             {/* Price */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                <FiDollarSign /> Price
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <FiDollarSign size={16} /> Price
               </label>
               <input
                 onChange={(e) => setPrice(e.target.value)}
                 value={price}
-                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent'
+                className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm sm:text-base'
                 type="number"
                 placeholder="0.00"
                 required
@@ -309,11 +310,11 @@ const Add = ({ token }) => {
 
             {/* Bestseller Toggle */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Bestseller</label>
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Bestseller</label>
               <button
                 type="button"
                 onClick={() => setBestseller(!bestseller)}
-                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base ${
                   bestseller 
                     ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-md' 
                     : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
@@ -325,8 +326,10 @@ const Add = ({ token }) => {
 
             {/* Sizes */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 font-medium mb-2">Sizes <span className='text-gray-400'>(Optional)</span></label>
-              <div className='flex flex-wrap gap-3'>
+              <label className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">
+                Sizes <span className='text-gray-400'>(Optional)</span>
+              </label>
+              <div className='flex flex-wrap gap-2 sm:gap-3'>
                 {["S", "M", "L", "XL", "XXL"].map((size) => (
                   <button
                     type="button"
@@ -338,7 +341,7 @@ const Add = ({ token }) => {
                           : [...prev, size]
                       )
                     }
-                    className={`w-14 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                    className={`w-10 sm:w-12 md:w-14 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base ${
                       sizes.includes(size) 
                         ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white shadow-md transform scale-105' 
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -355,9 +358,9 @@ const Add = ({ token }) => {
           <div className="flex justify-end pt-4">
             <button 
               type='submit' 
-              className='px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2'
+              className='px-5 sm:px-6 md:px-8 py-2 sm:py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg sm:rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 text-sm sm:text-base'
             >
-              <FiPlus size={20} />
+              <FiPlus size={18} />
               Add Product
             </button>
           </div>

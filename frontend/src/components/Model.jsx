@@ -12,14 +12,10 @@ const Model = () => {
   const Velocity = 50;
   const intervalRef = useRef();
 
-
   const [prevIdx, setPrevIdx] = useState(0);
   const [animating, setAnimating] = useState(false);
-
   const [direction, setDirection] = useState('right'); 
-
   const [hasAnimated, setHasAnimated] = useState(false);
-
 
   const fetchModelImages = async () => {
     try {
@@ -53,8 +49,6 @@ const Model = () => {
     fetchModelImages();
   }, []);
 
- 
-
   useEffect(() => {
     if (modelImages.length > 1) {
       intervalRef.current = setInterval(() => {
@@ -75,7 +69,6 @@ const Model = () => {
     }
   }, [modelImages, currentIdx]);
 
-
   const handleDotClick = (idx) => {
     if (idx === currentIdx) return;
     setPrevIdx(currentIdx);
@@ -93,9 +86,9 @@ const Model = () => {
   return currentImage && currentProduct ? (
     <div className="relative w-full h-screen overflow-hidden bg-black">
     
+      {/* Background Images */}
       <div className="absolute inset-0 w-full h-full">
         {modelImages.map((img, idx) => {
-       
           const isCurrent = idx === currentIdx;
           const isPrev = idx === prevIdx;
           const isNext = animating && idx === ((direction === 'right') ? (prevIdx + 1) % modelImages.length : (prevIdx - 1 + modelImages.length) % modelImages.length);
@@ -109,7 +102,6 @@ const Model = () => {
             } else if (isNext) {
               transitionClass = direction === 'right' ? 'opacity-100 z-20 transition-all duration-500 translate-x-full' : 'opacity-100 z-20 transition-all duration-500 -translate-x-full';
             } else if (isCurrent) {
-           
               transitionClass = 'opacity-100 translate-x-0 z-20';
             } else {
               transitionClass = 'opacity-0';
@@ -126,44 +118,60 @@ const Model = () => {
           );
         })}
       </div>
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <Link to={`/product/${currentProduct._id}`}
-          className="flex flex-col items-center justify-center text-white p-6 w-full">
-          <div className="text-center bg-black bg-opacity-50 p-6 rounded-lg max-w-xl mx-auto">
-            <div className="flex items-center gap-4 justify-center min-h-[40px]">
-              <span className="inline-block align-middle flex-shrink-0" style={{height:'2px',width:'40px',background:'#fff',borderRadius:'2px'}}></span>
-              <div className="max-w-xs w-full overflow-hidden">
+
+      {/* Centered Content - FIXED for mobile */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 px-4 sm:px-6 md:px-8">
+        <Link 
+          to={`/product/${currentProduct._id}`}
+          className="w-full max-w-[90%] sm:max-w-[80%] md:max-w-xl mx-auto"
+        >
+          <div className="text-center bg-black/60 backdrop-blur-sm p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl shadow-2xl">
+            {/* Top decorative line with scroll text */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 min-h-[30px] sm:min-h-[40px] mb-3 sm:mb-4">
+              <span className="inline-block flex-shrink-0 w-6 sm:w-8 md:w-10 h-[1px] sm:h-[2px] bg-white/70 rounded-full"></span>
+              <div className="max-w-[120px] sm:max-w-[200px] md:max-w-xs w-full overflow-hidden">
                 <ScrollVelocity
                   texts={['Latest Edition \u00A0\u00A0\u00A0 ']} 
                   velocity={Velocity} 
-                  className="custom-scroll-text"
+                  className="custom-scroll-text text-white/80 text-xs sm:text-sm"
                   numCopies={2}
                 />
               </div>
+              <span className="inline-block flex-shrink-0 w-6 sm:w-8 md:w-10 h-[1px] sm:h-[2px] bg-white/70 rounded-full"></span>
             </div>
-            <h1 className="prata-regular text-3xl sm:py-3 lg:text-5xl leading-relaxed">
+
+            {/* Product Name */}
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4 px-2">
               {currentProduct.name}
             </h1>
-            <div className="flex items-center gap-4 justify-center min-h-[40px]">
-              <div className="max-w-xs w-full overflow-hidden">
+
+            {/* Bottom decorative line with scroll text */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 min-h-[30px] sm:min-h-[40px]">
+              <span className="inline-block flex-shrink-0 w-6 sm:w-8 md:w-10 h-[1px] sm:h-[2px] bg-white/70 rounded-full"></span>
+              <div className="max-w-[120px] sm:max-w-[200px] md:max-w-xs w-full overflow-hidden">
                 <ScrollVelocity
                   texts={['Get Yours Now \u00A0\u00A0\u00A0']}
                   velocity={-Velocity} 
-                  className="custom-scroll-text inline-block"
+                  className="custom-scroll-text text-white/80 text-xs sm:text-sm"
                   numCopies={2}
                 />
               </div>
-              <span className="inline-block align-middle flex-shrink-0" style={{height:'2px',width:'40px',background:'#fff',borderRadius:'2px'}}></span>
+              <span className="inline-block flex-shrink-0 w-6 sm:w-8 md:w-10 h-[1px] sm:h-[2px] bg-white/70 rounded-full"></span>
             </div>
           </div>
         </Link>
       </div>
     
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+      {/* Dot Indicators */}
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2 z-20">
         {modelImages.map((img, idx) => (
           <button
             key={img._id}
-            className={`w-3 h-3 rounded-full ${idx === currentIdx ? 'bg-white' : 'bg-gray-500'} transition-all`}
+            className={`w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
+              idx === currentIdx 
+                ? 'bg-white scale-110 shadow-lg' 
+                : 'bg-white/50 hover:bg-white/70'
+            }`}
             onClick={() => handleDotClick(idx)}
             aria-label={`Go to slide ${idx + 1}`}
           />
@@ -171,7 +179,9 @@ const Model = () => {
       </div>
     </div>
   ) : (
-    <div>Loading...</div>
+    <div className="flex justify-center items-center h-screen bg-black">
+      <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-2 border-white border-t-transparent"></div>
+    </div>
   );
 };
 

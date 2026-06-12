@@ -72,39 +72,39 @@ const NotificationPanel = ({ onClose }) => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="w-96 bg-white rounded-xl shadow-2xl overflow-hidden">
+    <div className="w-[calc(100vw-2rem)] sm:w-96 max-w-[calc(100vw-2rem)] sm:max-w-96 bg-white rounded-xl shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <FiBell className="text-white" size={20} />
-          <h3 className="text-white font-semibold">Notifications</h3>
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <FiBell className="text-white" size={18} />
+          <h3 className="text-white font-semibold text-sm sm:text-base">Notifications</h3>
           {unreadCount > 0 && (
-            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+            <span className="bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
               {unreadCount}
             </span>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 sm:gap-2">
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="text-white text-xs hover:text-gray-300"
+              className="text-white text-[10px] sm:text-xs hover:text-gray-300 transition-colors"
             >
               Mark all read
             </button>
           )}
-          <button onClick={onClose} className="text-white hover:text-gray-300">
-            <FiX size={18} />
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors">
+            <FiX size={16} className="sm:w-[18px] sm:h-[18px]" />
           </button>
         </div>
       </div>
 
       {/* Notifications List */}
-      <div className="max-h-96 overflow-y-auto">
+      <div className="max-h-[70vh] sm:max-h-96 overflow-y-auto">
         {notifications.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <FiBell className="mx-auto text-4xl mb-2" />
-            <p>No notifications</p>
+          <div className="text-center py-6 sm:py-8 text-gray-500">
+            <FiBell className="mx-auto text-3xl sm:text-4xl mb-2" />
+            <p className="text-sm sm:text-base">No notifications</p>
           </div>
         ) : (
           notifications.map((notif) => {
@@ -112,22 +112,28 @@ const NotificationPanel = ({ onClose }) => {
             return (
               <div
                 key={notif.id}
-                className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                className={`p-3 sm:p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
                   !notif.read ? 'bg-blue-50' : ''
                 }`}
                 onClick={() => markAsRead(notif.id)}
               >
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0">
-                    <Icon className={`${notif.color}`} size={20} />
+                <div className="flex gap-2.5 sm:gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <Icon className={`${notif.color} text-base sm:text-lg md:text-xl`} size={18} />
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-800 text-sm">{notif.title}</p>
-                    <p className="text-gray-600 text-xs mt-1">{notif.message}</p>
-                    <p className="text-gray-400 text-xs mt-2">{notif.time}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-800 text-xs sm:text-sm">
+                      {notif.title}
+                    </p>
+                    <p className="text-gray-600 text-[11px] sm:text-xs mt-1 leading-relaxed">
+                      {notif.message}
+                    </p>
+                    <p className="text-gray-400 text-[10px] sm:text-xs mt-1.5 sm:mt-2">
+                      {notif.time}
+                    </p>
                   </div>
                   {!notif.read && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5"></div>
                   )}
                 </div>
               </div>
@@ -137,8 +143,8 @@ const NotificationPanel = ({ onClose }) => {
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-50 px-4 py-2 text-center">
-        <button className="text-blue-500 text-sm hover:text-blue-600">
+      <div className="bg-gray-50 px-3 sm:px-4 py-2 text-center">
+        <button className="text-blue-500 text-[11px] sm:text-sm hover:text-blue-600 transition-colors">
           View All Notifications
         </button>
       </div>

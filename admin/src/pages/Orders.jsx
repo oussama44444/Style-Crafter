@@ -80,7 +80,6 @@ const Orders = ({ token }) => {
     }
   };
 
-  // Filter orders based on search and status
   useEffect(() => {
     let filtered = [...orders];
     
@@ -116,12 +115,12 @@ const Orders = ({ token }) => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'Pending': return <FiClock className="inline mr-1" />;
-      case 'Processing': return <FiPackage className="inline mr-1" />;
-      case 'Shipped': return <FiTruck className="inline mr-1" />;
-      case 'Delivered': return <FiCheckCircle className="inline mr-1" />;
-      case 'Cancelled': return <FiXCircle className="inline mr-1" />;
-      default: return <FiPackage className="inline mr-1" />;
+      case 'Pending': return <FiClock className="inline mr-1" size={12} />;
+      case 'Processing': return <FiPackage className="inline mr-1" size={12} />;
+      case 'Shipped': return <FiTruck className="inline mr-1" size={12} />;
+      case 'Delivered': return <FiCheckCircle className="inline mr-1" size={12} />;
+      case 'Cancelled': return <FiXCircle className="inline mr-1" size={12} />;
+      default: return <FiPackage className="inline mr-1" size={12} />;
     }
   };
 
@@ -136,62 +135,62 @@ const Orders = ({ token }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-1 sm:mb-2">
             Order Management
           </h1>
-          <p className="text-gray-500">Track and manage customer orders</p>
+          <p className="text-xs sm:text-sm text-gray-500">Track and manage customer orders</p>
         </div>
 
-        {/* Stats Dashboard */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-800">{stats.total}</div>
-            <div className="text-xs text-gray-500">Total Orders</div>
+        {/* Stats Dashboard - Responsive Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">{stats.total}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Total Orders</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-            <div className="text-xs text-gray-500">Pending</div>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-yellow-600">{stats.pending}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Pending</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{stats.processing}</div>
-            <div className="text-xs text-gray-500">Processing</div>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-blue-600">{stats.processing}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Processing</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{stats.shipped}</div>
-            <div className="text-xs text-gray-500">Shipped</div>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-purple-600">{stats.shipped}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Shipped</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{stats.delivered}</div>
-            <div className="text-xs text-gray-500">Delivered</div>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-green-600">{stats.delivered}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Delivered</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-800">{currency}{stats.totalRevenue.toLocaleString()}</div>
-            <div className="text-xs text-gray-500">Revenue</div>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 text-center">
+            <div className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">{currency}{stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Revenue</div>
           </div>
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1 relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <input
                 type="text"
-                placeholder="Search by customer name or order ID..."
+                placeholder="Search by customer or order ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               />
             </div>
-            <div className="w-full md:w-64">
+            <div className="w-full sm:w-48 md:w-64">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
               >
                 <option value="">All Statuses</option>
                 <option value="Pending">Pending</option>
@@ -206,101 +205,95 @@ const Orders = ({ token }) => {
 
         {/* Orders List */}
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
+          <div className="flex justify-center items-center py-12 sm:py-20">
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-b-2 border-gray-800"></div>
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Orders Found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-8 sm:p-10 md:p-12 text-center">
+            <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">📦</div>
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 mb-1 sm:mb-2">No Orders Found</h3>
+            <p className="text-xs sm:text-sm text-gray-500">Try adjusting your search or filter criteria</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredOrders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+                className="bg-white rounded-lg sm:rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
               >
-                {/* Order Header */}
-                <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4 flex flex-wrap justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <FiPackage className="text-white text-xl" />
+                {/* Order Header - Responsive */}
+                <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-4 flex flex-wrap justify-between items-center gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                    <FiPackage className="text-white text-base sm:text-lg md:text-xl" />
                     <div>
-                      <p className="text-white text-sm">Order #{order._id.slice(-8)}</p>
-                      <p className="text-gray-300 text-xs flex items-center gap-1">
-                        <FiCalendar size={12} />
-                        {new Date(order.date).toLocaleDateString()} at {new Date(order.date).toLocaleTimeString()}
+                      <p className="text-white text-xs sm:text-sm font-medium">Order #{order._id.slice(-8)}</p>
+                      <p className="text-gray-300 text-[10px] sm:text-xs flex items-center gap-1">
+                        <FiCalendar size={10} className="sm:w-3 sm:h-3" />
+                        {new Date(order.date).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${getStatusColor(order.status)}`}>
+                  <div className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold flex items-center gap-0.5 sm:gap-1 ${getStatusColor(order.status)}`}>
                     {getStatusIcon(order.status)}
                     {order.status}
                   </div>
                 </div>
 
-                {/* Order Content */}
-                <div className="p-6">
-                  <div className="grid md:grid-cols-3 gap-6">
+                {/* Order Content - Responsive Grid */}
+                <div className="p-3 sm:p-4 md:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                     {/* Customer Info */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-                        <FiUser /> Customer Information
+                    <div className="space-y-1 sm:space-y-2">
+                      <h4 className="font-semibold text-gray-800 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                        <FiUser size={14} /> Customer
                       </h4>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-xs sm:text-sm">
                         {order.address.firstName} {order.address.lastName}
                       </p>
-                      <p className="text-gray-600 flex items-center gap-2">
-                        <FiPhone className="text-gray-400" />
+                      <p className="text-gray-600 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                        <FiPhone size={12} className="sm:w-3 sm:h-3" />
                         {order.address.phone}
                       </p>
                     </div>
 
                     {/* Shipping Address */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-                        <FiMapPin /> Shipping Address
+                    <div className="space-y-1 sm:space-y-2">
+                      <h4 className="font-semibold text-gray-800 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                        <FiMapPin size={14} /> Address
                       </h4>
-                      <p className="text-gray-600">{order.address.street}</p>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-xs sm:text-sm">{order.address.street}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">
                         {order.address.city}, {order.address.state} {order.address.zipcode}
                       </p>
-                      <p className="text-gray-600">{order.address.country}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">{order.address.country}</p>
                     </div>
 
                     {/* Order Summary */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-                        <FiCreditCard /> Order Summary
+                    <div className="space-y-1 sm:space-y-2">
+                      <h4 className="font-semibold text-gray-800 text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                        <FiCreditCard size={14} /> Summary
                       </h4>
-                      <p className="text-gray-600">Items: {order.items.length}</p>
-                      <p className="text-gray-600">Method: {order.paymentMethod}</p>
-                      <p className="text-gray-600">
-                        Payment: 
-                        <span className={order.payment ? 'text-green-600 ml-1' : 'text-red-600 ml-1'}>
-                          {order.payment ? ' Paid' : ' Pending'}
-                        </span>
-                      </p>
-                      <p className="text-2xl font-bold text-gray-800">
+                      <p className="text-gray-600 text-xs sm:text-sm">Items: {order.items.length}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">Payment: {order.paymentMethod}</p>
+                      <div className="text-base sm:text-lg md:text-2xl font-bold text-gray-800">
                         {currency}{order.amount}
-                      </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Order Items */}
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h4 className="font-semibold text-gray-800 mb-3">Order Items</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* Order Items - Scroll on mobile */}
+                  <div className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-gray-200">
+                    <h4 className="font-semibold text-gray-800 mb-2 sm:mb-3 text-xs sm:text-sm">Items</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 max-h-32 sm:max-h-40 overflow-y-auto">
                       {order.items.map((item, index) => (
-                        <div key={index} className="bg-gray-50 rounded-lg p-3 flex justify-between items-center">
-                          <div>
-                            <p className="font-medium text-gray-800">{item.name}</p>
-                            <p className="text-sm text-gray-500">
+                        <div key={index} className="bg-gray-50 rounded-lg p-2 sm:p-3 flex justify-between items-center">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-gray-800 text-xs sm:text-sm truncate">{item.name}</p>
+                            <p className="text-gray-500 text-[10px] sm:text-xs">
                               Size: {item.size} | Qty: {item.quantity}
                             </p>
                           </div>
-                          <p className="font-semibold text-gray-800">
+                          <p className="font-semibold text-gray-800 text-xs sm:text-sm ml-2">
                             {currency}{item.price * item.quantity}
                           </p>
                         </div>
@@ -308,12 +301,12 @@ const Orders = ({ token }) => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="mt-6 pt-6 border-t border-gray-200 flex flex-wrap gap-3 justify-end">
+                  {/* Action Buttons - Responsive */}
+                  <div className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-gray-200 flex flex-wrap gap-2 sm:gap-3 justify-end">
                     <select
                       value={order.status}
                       onChange={e => statusHandler(e, order._id)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+                      className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 bg-white"
                       disabled={order.status === 'Delivered' || order.status === 'Cancelled'}
                     >
                       <option value="Pending">Pending</option>
@@ -326,9 +319,9 @@ const Orders = ({ token }) => {
                     {order.status !== 'Cancelled' && order.status !== 'Delivered' && (
                       <button
                         onClick={() => cancelOrder(order._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2"
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                       >
-                        <FiXCircle /> Cancel Order
+                        <FiXCircle size={14} /> Cancel
                       </button>
                     )}
                   </div>

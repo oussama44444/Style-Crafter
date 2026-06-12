@@ -49,54 +49,54 @@ const Settings = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">System Settings</h1>
-          <p className="text-gray-500 mt-1">Configure your store settings and preferences</p>
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">System Settings</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">Configure your store settings and preferences</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
           {/* General Settings */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiGlobe /> General Settings
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+              <FiGlobe size={16} className="sm:w-5 sm:h-5" /> General Settings
             </h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Store Name</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Store Name</label>
                 <input
                   type="text"
                   value={settings.general.storeName}
                   onChange={(e) => handleChange('general', 'storeName', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Store Email</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Store Email</label>
                 <input
                   type="email"
                   value={settings.general.storeEmail}
                   onChange={(e) => handleChange('general', 'storeEmail', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Store Phone</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Store Phone</label>
                 <input
                   type="text"
                   value={settings.general.storePhone}
                   onChange={(e) => handleChange('general', 'storePhone', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Currency</label>
                 <select
                   value={settings.general.currency}
                   onChange={(e) => handleChange('general', 'currency', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -107,18 +107,18 @@ const Settings = () => {
           </div>
 
           {/* Notification Settings */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiBell /> Notification Settings
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+              <FiBell size={16} className="sm:w-5 sm:h-5" /> Notification Settings
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {Object.entries(settings.notifications).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between py-2">
+                <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between py-1.5 sm:py-2 gap-2 sm:gap-0">
                   <div>
-                    <p className="font-medium text-gray-800">
+                    <p className="font-medium text-gray-800 text-sm sm:text-base">
                       {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       {key === 'emailNotifications' && 'Receive email notifications'}
                       {key === 'orderAlerts' && 'Get alerts for new orders'}
                       {key === 'inventoryAlerts' && 'Low stock notifications'}
@@ -128,9 +128,9 @@ const Settings = () => {
                   <button
                     type="button"
                     onClick={() => handleToggle('notifications', key)}
-                    className="text-2xl"
+                    className="text-xl sm:text-2xl self-start sm:self-auto"
                   >
-                    {value ? <FiToggleRight className="text-green-500" size={28} /> : <FiToggleLeft className="text-gray-400" size={28} />}
+                    {value ? <FiToggleRight className="text-green-500" size={22} /> : <FiToggleLeft className="text-gray-400" size={22} />}
                   </button>
                 </div>
               ))}
@@ -141,7 +141,7 @@ const Settings = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
             >
               Save Settings
             </button>
