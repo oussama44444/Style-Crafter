@@ -1,7 +1,7 @@
 
 
 
-import logo from './Logo.png';
+import logo from './logo.png';
 
 import cart from './carticon.png';
 import dropdown from './dropdown_icon.png';
