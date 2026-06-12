@@ -23,13 +23,13 @@ const Model = () => {
 
   const fetchModelImages = async () => {
     try {
-      const response = await fetch("http://localhost:6009/api/product/model-images");
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/model-images`);
       const data = await response.json();
       if (data.success && Array.isArray(data.images) && data.images.length > 0) {
         setModelImages(data.images);
     
         const productPromises = data.images.map(img =>
-          fetch(`http://localhost:6009/api/product/${img.productId}`)
+          fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/${img.productId}`)
             .then(res => res.json())
             .then(prodData => prodData.success ? prodData.product : null)
         );

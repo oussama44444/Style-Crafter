@@ -18,7 +18,7 @@ const ShopContextProvider = ({ children }) => {
 
   const currency = 'dt';
   const navigate = useNavigate();
-  const backendUrl = "http://localhost:6009";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const addToCart = async (itemId, size) => {
     if (!size) {
