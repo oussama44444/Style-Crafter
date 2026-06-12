@@ -3,7 +3,7 @@ import { assets } from '../assets/assets';
 import { 
   FiLogOut, FiUser, FiBell, FiSettings, FiChevronDown, 
   FiSun, FiMoon, FiMenu, FiX, FiShoppingBag, FiHome,
-  FiPackage, FiUsers, FiBarChart2
+  FiPackage, FiUsers, FiBarChart2, FiList, FiFolder
 } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
@@ -52,6 +52,7 @@ const NavBar = ({ setToken }) => {
       case '/set-model-image': return 'Model Images';
       case '/categories': return 'Category Management';
       case '/profile': return 'Profile Settings';
+      case '/settings': return 'System Settings';
       default: return 'Admin Panel';
     }
   };
@@ -92,13 +93,13 @@ const NavBar = ({ setToken }) => {
 
             {/* Right Section */}
             <div className="flex items-center gap-2 sm:gap-4">
-          
-
               {/* Dark Mode Toggle */}
-            
-
-              {/* Notifications */}
-             
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
+              </button>
 
               {/* Profile Dropdown */}
               <div className="relative">
@@ -223,6 +224,33 @@ const NavBar = ({ setToken }) => {
                   <FiFolder size={18} />
                   Categories
                 </Link>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FiUser size={18} />
+                  Profile
+                </Link>
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FiSettings size={18} />
+                  Settings
+                </Link>
+                <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                <button
+                  onClick={() => {
+                    handleLogOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                >
+                  <FiLogOut size={18} />
+                  Logout
+                </button>
               </nav>
             </div>
           </div>

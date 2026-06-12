@@ -1,13 +1,14 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { 
   FiPlus, FiList, FiShoppingBag, FiImage, FiFolder, 
   FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut 
 } from 'react-icons/fi';
 
-const SideBar = () => {
+const SideBar = ({ setToken }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { to: "/dashboard", label: "Dashboard", icon: FiBarChart2, color: "text-purple-500" },
@@ -25,6 +26,14 @@ const SideBar = () => {
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('token');
+      setToken(''); // Clear token in App state
+      navigate('/login');
+    }
   };
 
   return (
@@ -76,13 +85,6 @@ const SideBar = () => {
                 {/* Label */}
                 <span className="font-medium">{item.label}</span>
                 
-                {/* Badge for Orders */}
-                {item.to === "/orders" && !active && (
-                  <span className="ml-auto bg-black-500 text-white text-xs px-2 py-1 rounded-full">
-                  
-                  </span>
-                )}
-                
                 {/* Hover Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </NavLink>
@@ -125,12 +127,7 @@ const SideBar = () => {
           
           {/* Logout Button */}
           <button
-            onClick={() => {
-              if (window.confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('token');
-                window.location.href = '/login';
-              }
-            }}
+            onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-300 mt-4"
           >
             <FiLogOut className="text-xl" />
