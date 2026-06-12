@@ -163,30 +163,29 @@ const ShopContextProvider = ({ children }) => {
   }, []);
 
   const contextValue = {
-    products,
-    currency,
-    search,
-    setSearch,
-    showSearch,
-    setShowSearch,
-    cartItems,
-    addToCart,
-    getCartCount,
-    updateQuantity,
-    getTotalPrice,
-    navigate,
-    completedOrders,
-    setCompletedOrders,
-    token,
-    setToken,
-    userId,        // Add userId to context
-    setUserId,     // Add setUserId to context
-    cartItems,
-    setCartItems,
-    getDiscountedPrice,
-    applyDiscount,
-    backendUrl,    // Also add backendUrl for convenience
-  };
+  products,
+  currency,
+  search,
+  setSearch,
+  showSearch,
+  setShowSearch,
+  cartItems,
+  addToCart,
+  getCartCount,
+  updateQuantity,
+  getTotalPrice,
+  navigate,
+  completedOrders,
+  setCompletedOrders,
+  token,
+  setToken,
+  userId,
+  setUserId,
+  setCartItems,
+  getDiscountedPrice,
+  applyDiscount,
+  backendUrl,
+};
 
   return (
     <ShopContext.Provider value={contextValue}>
