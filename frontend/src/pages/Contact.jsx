@@ -1,6 +1,6 @@
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
-import SubscribeBox from "../components/subscribeBox";
+import SubscribeBox from "../components/SubscribeBox";
 import { FiMapPin, FiPhone, FiMail, FiFacebook, FiInstagram, FiTwitter, FiSend, FiClock, FiGlobe } from "react-icons/fi";
 
 function Contact() {

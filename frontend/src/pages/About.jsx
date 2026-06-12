@@ -1,5 +1,5 @@
 import { assets } from "../assets/assets";
-import SubscribeBox from "../components/subscribeBox";
+import SubscribeBox from "../components/SubscribeBox";
 import Title from "../components/Title";
 import { FiAward, FiHeart, FiTruck, FiShield, FiStar, FiUsers } from "react-icons/fi";
 
