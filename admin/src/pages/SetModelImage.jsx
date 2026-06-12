@@ -5,7 +5,10 @@ import {
   FiImage, FiLink, FiGrid, FiRefreshCw 
 } from 'react-icons/fi';
 
-const API_URL = "http://localhost:6009/api/product";
+// ✅ FIX: Use environment variable instead of hardcoded localhost
+const API_URL = import.meta.env.VITE_BACKEND_URL 
+  ? `${import.meta.env.VITE_BACKEND_URL}/api/product`
+  : "http://localhost:6009/api/product";
 
 const SetModelImage = () => {
   const [products, setProducts] = useState([]);
@@ -21,6 +24,9 @@ const SetModelImage = () => {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+
+  // Debug: Log the API URL
+  console.log("API_URL:", API_URL);
 
   useEffect(() => {
     fetchProducts();
