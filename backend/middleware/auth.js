@@ -1,26 +1,24 @@
+// middleware/auth.js
 import jwt from 'jsonwebtoken';
 
-const authUser = (req, res, next) => {
-  const { token } = req.headers;
-
- 
-  if (!token) {
-    return res.json({ success: false, message: 'Not authorized' });
-  }
-
+const authUser = async (req, res, next) => {
   try {
- 
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-  
-    req.body.userId = decodedToken.id;
-
-  
+    const token = req.headers.token;
+    
+    if (!token) {
+      return res.json({ success: false, message: "Not authorized, no token" });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = { id: decoded.id }; // Make sure this matches your token structure
+    
     next();
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: error.message });
+    console.error("Auth error:", error);
+    res.json({ success: false, message: "Not authorized, invalid token" });
   }
 };
 
 export default authUser;
+
+

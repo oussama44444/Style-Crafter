@@ -5,11 +5,17 @@ import { backendUrl } from '../App';
 import { toast } from 'react-toastify';
 import { HexColorPicker } from "react-colorful";
 import { assets } from '../assets/assets';
+import { 
+  FiSave, FiX, FiPlus, FiTrash2, FiFolder, FiTag, 
+  FiDollarSign, FiGrid, FiImage, FiUpload, FiChevronLeft 
+} from 'react-icons/fi';
+
 const ModifyProduct = ({ token }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -22,6 +28,7 @@ const ModifyProduct = ({ token }) => {
   const [subCategories, setSubCategories] = useState([]);
   const [currentImages, setCurrentImages] = useState([]);
   const [colorVariants, setColorVariants] = useState([]);
+  const [showColors, setShowColors] = useState(false);
 
   useEffect(() => {
     // Fetch product
@@ -40,7 +47,9 @@ const ModifyProduct = ({ token }) => {
             images: [],
           });
           setCurrentImages(res.data.product.image || []);
+          const hasColors = res.data.product.colors && res.data.product.colors.length > 0;
           setColorVariants(res.data.product.colors || []);
+          setShowColors(hasColors);
         } else {
           toast.error(res.data.message);
         }
@@ -48,17 +57,18 @@ const ModifyProduct = ({ token }) => {
         toast.error('Failed to fetch product');
       }
     };
-    // Fetch categories
+    
+    // Fetch categories - FIXED: changed from /api/category to /api/categories
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/category`);
+        const res = await axios.get(`${backendUrl}/api/categories`);
         setCategories(res.data.categories);
       } catch (err) {
         toast.error('Failed to fetch categories');
       }
     };
-    fetchProduct();
-    fetchCategories();
+    
+    Promise.all([fetchProduct(), fetchCategories()]).finally(() => setLoading(false));
   }, [id]);
 
   useEffect(() => {
@@ -84,7 +94,6 @@ const ModifyProduct = ({ token }) => {
     setForm(f => ({ ...f, images: Array.from(e.target.files) }));
   };
 
-  // Handle replacing a single image
   const handleReplaceImage = (idx, file) => {
     setForm(f => {
       const newImages = [...f.images];
@@ -98,7 +107,6 @@ const ModifyProduct = ({ token }) => {
     });
   };
 
-  // Handle deleting a single image
   const handleDeleteImage = (idx, e) => {
     e.stopPropagation();
     setCurrentImages(imgs => imgs.filter((_, i) => i !== idx));
@@ -131,6 +139,7 @@ const ModifyProduct = ({ token }) => {
       toast.error('Product ID missing!');
       return;
     }
+    
     const data = new FormData();
     data.append('id', id);
     data.append('name', form.name);
@@ -139,14 +148,16 @@ const ModifyProduct = ({ token }) => {
     data.append('category', form.category);
     data.append('subCategory', form.subCategory);
     data.append('sizes', JSON.stringify(form.sizes));
+    
     // Send all images (existing URLs or new files)
     currentImages.forEach((img, idx) => {
       if (img && typeof img !== 'string') {
-        data.append(`image${idx+1}`, img); // new file
+        data.append(`image${idx+1}`, img);
       } else if (img && typeof img === 'string') {
-        data.append(`image${idx+1}`, img); // existing URL
+        data.append(`image${idx+1}`, img);
       }
     });
+    
     // Add color variants
     if (colorVariants.length > 0) {
       const colorsArr = colorVariants.map(variant => ({ color: variant.color }));
@@ -157,10 +168,11 @@ const ModifyProduct = ({ token }) => {
         });
       });
     }
+    
     try {
       const res = await axios.put(`${backendUrl}/api/product/modify`, data, { headers: { token } });
       if (res.data.success) {
-        toast.success('Product updated!');
+        toast.success('Product updated successfully!');
         navigate(-1);
       } else {
         toast.error(res.data.message);
@@ -170,106 +182,287 @@ const ModifyProduct = ({ token }) => {
     }
   };
 
-  if (!product) return <div className="p-8">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800"></div>
+      </div>
+    );
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="border p-4 rounded bg-white max-w-xl mx-auto mt-6">
-      <h3 className="text-lg font-bold mb-2">Edit Product</h3>
-      <div className="mb-2">
-        <label>Name:</label>
-        <input name="name" value={form.name} onChange={handleChange} className="border px-2 py-1 w-full" />
-      </div>
-      <div className="mb-2">
-        <label>Description:</label>
-        <textarea name="description" value={form.description} onChange={handleChange} className="border px-2 py-1 w-full" />
-      </div>
-      <div className="mb-2">
-        <label>Price:</label>
-        <input name="price" type="number" value={form.price} onChange={handleChange} className="border px-2 py-1 w-full" />
-      </div>
-      <div className="mb-2">
-        <label>Category:</label>
-        <select name="category" value={form.category} onChange={handleChange} className="border px-2 py-1 w-full">
-          {categories.map(cat => (
-            <option key={cat._id} value={cat.name}>{cat.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-2">
-        <label>Subcategory:</label>
-        <select name="subCategory" value={form.subCategory} onChange={handleChange} className="border px-2 py-1 w-full">
-          {subCategories.map(sub => (
-            <option key={sub} value={sub}>{sub}</option>
-          ))}
-        </select>
-      </div>
-      <div className="mb-2">
-        <label>Sizes:</label>
-        <div className="flex gap-2">
-          {["S", "M", "L", "XL", "XXL"].map(size => (
-            <span key={size} onClick={() => handleSizeToggle(size)} className={`px-2 py-1 border rounded cursor-pointer ${form.sizes.includes(size) ? 'bg-blue-200' : ''}`}>{size}</span>
-          ))}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <FiChevronLeft /> Back to Products
+          </button>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            Modify Product
+          </h1>
+          <p className="text-gray-500 mt-2">Edit product details and images</p>
         </div>
-      </div>
-      <div className="mb-2">
-        <label>Product Images:</label>
-        <div className="flex gap-3">
-          {[0,1,2,3].map(idx => (
-            <div key={idx} className="relative w-20 h-24 flex flex-col items-center justify-center border rounded bg-gray-50">
-              {currentImages[idx] ? (
-                <>
-                  <img src={typeof currentImages[idx] === 'string' ? currentImages[idx] : URL.createObjectURL(currentImages[idx])} alt="Product" className="w-full h-20 object-cover rounded" />
-                  <button type="button" onClick={e => handleDeleteImage(idx, e)} className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center z-10 font-bold shadow">×</button>
-                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onClick={e => e.stopPropagation()} onChange={e => e.target.files && handleReplaceImage(idx, e.target.files[0])} />
-                </>
-              ) : (
-                <input type="file" accept="image/*" className="w-full h-full opacity-0 cursor-pointer" onChange={e => e.target.files && handleReplaceImage(idx, e.target.files[0])} />
-              )}
+
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+          {/* Basic Information */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Product Name */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                Product Name
+              </label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                placeholder="Product name"
+                required
+              />
             </div>
-          ))}
-        </div>
-      </div>
-      <div className="mb-2">
-        <label>Color Variants:</label>
-        <div className="flex flex-col gap-6 w-full">
-          {colorVariants.map((variant, idx) => (
-            <div key={idx} className="border p-3 rounded mb-2 w-full">
-              <div className="flex items-center gap-4 mb-2">
-                <span>Color:</span>
-                <HexColorPicker color={variant.color} onChange={color => handleColorChange(idx, color)} />
-                <input type="text" value={variant.color} onChange={e => handleColorChange(idx, e.target.value)} className="w-24 border px-2 py-1 ml-2" />
-                <button type="button" className="ml-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded font-bold shadow" onClick={() => handleRemoveColor(idx)}>Delete</button>
-              </div>
-              <div className="flex gap-2">
-                {[0,1,2,3].map(imgIdx => (
-                  <label key={imgIdx} htmlFor={`color${idx}_image${imgIdx}`}> 
-                    <img
-                      className="w-20 h-20 object-cover border"
-                      src={variant.images[imgIdx] ? (typeof variant.images[imgIdx] === 'string' ? variant.images[imgIdx] : URL.createObjectURL(variant.images[imgIdx])) : assets.upload_area}
-                      alt='color variant'
-                    />
-                    <input
-                      type='file'
-                      id={`color${idx}_image${imgIdx}`}
-                      hidden
-                      onChange={e => {
-                        const file = e.target.files[0];
-                        handleColorImageChange(idx, imgIdx, file);
-                      }}
-                    />
-                  </label>
+
+            {/* Description */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2">Description</label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                rows="4"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all resize-none"
+                placeholder="Product description"
+                required
+              />
+            </div>
+
+            {/* Price */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiDollarSign /> Price
+              </label>
+              <input
+                name="price"
+                type="number"
+                value={form.price}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                placeholder="0.00"
+                required
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiFolder /> Category
+              </label>
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+              >
+                {categories.map(cat => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subcategory */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiTag /> Subcategory
+              </label>
+              <select
+                name="subCategory"
+                value={form.subCategory}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+              >
+                {subCategories.map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sizes */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Sizes</label>
+              <div className="flex flex-wrap gap-3">
+                {["S", "M", "L", "XL", "XXL"].map(size => (
+                  <button
+                    type="button"
+                    key={size}
+                    onClick={() => handleSizeToggle(size)}
+                    className={`w-14 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                      form.sizes.includes(size)
+                        ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white shadow-md transform scale-105'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {size}
+                  </button>
                 ))}
               </div>
             </div>
-          ))}
-          <button type='button' className='mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded font-bold shadow' onClick={handleAddColor}>+ Add Color</button>
-        </div>
+          </div>
+
+          {/* Product Images */}
+          <div className="border-t pt-6">
+            <label className="block text-gray-700 font-medium mb-3 flex items-center gap-2">
+              <FiImage /> Product Images
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[0, 1, 2, 3].map(idx => (
+                <div key={idx} className="relative group">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
+                    {currentImages[idx] ? (
+                      <>
+                        <img
+                          src={typeof currentImages[idx] === 'string' ? currentImages[idx] : URL.createObjectURL(currentImages[idx])}
+                          alt={`Product ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={e => handleDeleteImage(idx, e)}
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FiUpload className="text-gray-400" size={24} />
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={e => e.target.files && handleReplaceImage(idx, e.target.files[0])}
+                    />
+                  </div>
+                  <p className="text-xs text-center text-gray-500 mt-2">Image {idx + 1}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Variants Toggle */}
+          <div className="border-t pt-6">
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowColors(!showColors)}
+                className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
+                  showColors
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-md'
+                    : 'bg-gradient-to-r from-gray-800 to-gray-700 text-white hover:from-gray-900 hover:to-gray-800 shadow-md'
+                }`}
+              >
+                <FiGrid />
+                {showColors ? 'Remove Color Variations' : 'Add Color Variations'}
+              </button>
+            </div>
+          </div>
+
+          {/* Color Variants Section */}
+          {showColors && (
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Color Variants</h3>
+              <div className="space-y-6">
+                {colorVariants.map((variant, idx) => (
+                  <div key={idx} className="bg-gray-50 rounded-xl p-6 space-y-4">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium text-gray-700">Color:</span>
+                        <HexColorPicker
+                          color={variant.color}
+                          onChange={color => handleColorChange(idx, color)}
+                        />
+                        <input
+                          type="text"
+                          value={variant.color}
+                          onChange={e => handleColorChange(idx, e.target.value)}
+                          className="w-28 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2"
+                        onClick={() => handleRemoveColor(idx)}
+                      >
+                        <FiTrash2 /> Delete
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {[0, 1, 2, 3].map(imgIdx => (
+                        <label key={imgIdx} className="cursor-pointer group">
+                          <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
+                            <img
+                              className="w-full h-full object-cover"
+                              src={variant.images[imgIdx] 
+                                ? (typeof variant.images[imgIdx] === 'string' 
+                                  ? variant.images[imgIdx] 
+                                  : URL.createObjectURL(variant.images[imgIdx]))
+                                : assets.upload_area}
+                              alt={`Color variant ${imgIdx + 1}`}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                              <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                            </div>
+                          </div>
+                          <input
+                            type="file"
+                            hidden
+                            onChange={e => {
+                              const file = e.target.files[0];
+                              handleColorImageChange(idx, imgIdx, file);
+                            }}
+                          />
+                          <p className="text-xs text-center text-gray-500 mt-1">Image {imgIdx + 1}</p>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md"
+                  onClick={handleAddColor}
+                >
+                  <FiPlus /> Add Color Variant
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-4 pt-6 border-t">
+            <button
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <FiSave size={20} /> Save Changes
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <FiX size={20} /> Cancel
+            </button>
+          </div>
+        </form>
       </div>
-      <div className="flex gap-2 mt-4">
-        <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded font-bold shadow">Save</button>
-        <button type="button" onClick={() => navigate(-1)} className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-bold shadow">Cancel</button>
-      </div>
-    </form>
+    </div>
   );
 };
 

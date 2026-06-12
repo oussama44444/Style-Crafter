@@ -11,14 +11,15 @@ const ShopContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('');
+  const [userId, setUserId] = useState(''); // Add userId state
   const [completedOrders, setCompletedOrders] = useState([]);
   const [discount, setDiscount] = useState(0); 
   const [subscribedEmails, setSubscribedEmails] = useState([]); 
 
   const currency = 'dt';
   const navigate = useNavigate();
+  const backendUrl = "http://localhost:6009";
 
- 
   const addToCart = async (itemId, size) => {
     if (!size) {
       toast.error('Please select a size before adding to cart!', {
@@ -41,7 +42,7 @@ const ShopContextProvider = ({ children }) => {
 
     if (token) {
       try {
-        await axios.post('http://localhost:6009/api/cart/add', { itemId, size }, { headers: { token } });
+        await axios.post(`${backendUrl}/api/cart/add`, { itemId, size }, { headers: { token } });
       } catch (error) {
         console.error(error);
         toast.error(error.message);
@@ -49,14 +50,12 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-  
   const getCartCount = () => {
     return Object.values(cartItems).reduce((total, item) => {
       return total + Object.values(item).reduce((itemTotal, quantity) => itemTotal + quantity, 0);
     }, 0);
   };
 
-  
   const updateQuantity = async (itemId, size, quantity) => {
     const updatedCart = { ...cartItems };
     updatedCart[itemId][size] = quantity;
@@ -65,7 +64,7 @@ const ShopContextProvider = ({ children }) => {
 
     if (token) {
       try {
-        await axios.post('http://localhost:6009/api/cart/update', { itemId, size, quantity }, { headers: { token } });
+        await axios.post(`${backendUrl}/api/cart/update`, { itemId, size, quantity }, { headers: { token } });
       } catch (error) {
         console.error(error);
         toast.error(error.message);
@@ -73,7 +72,6 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-  
   const applyDiscount = (email) => {
     if (!subscribedEmails.includes(email)) {
       setSubscribedEmails((prev) => [...prev, email]);
@@ -84,7 +82,6 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
- 
   const getTotalPrice = () => {
     return Object.entries(cartItems).reduce((totalAmount, [itemId, sizes]) => {
       const product = products.find(product => product._id === itemId);
@@ -98,15 +95,13 @@ const ShopContextProvider = ({ children }) => {
     }, 0);
   };
 
- 
   const getDiscountedPrice = (product) => {
     return discount > 0 ? product.price * (1 - discount / 100) : product.price;
   };
 
-  
   const getProductsData = async () => {
     try {
-      const response = await axios.get('http://localhost:6009/api/product/list');
+      const response = await axios.get(`${backendUrl}/api/product/list`);
       if (response.data.success) {
         setProducts(response.data.products);
       } else {
@@ -118,16 +113,31 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
-
   const getUserCart = async (userToken) => {
     try {
-      const response = await axios.post('http://localhost:6009/api/cart/get', {}, { headers: { token: userToken } });
+      const response = await axios.post(`${backendUrl}/api/cart/get`, {}, { headers: { token: userToken } });
       if (response.data.success) {
         setCartItems(response.data.cartData);
       }
     } catch (error) {
       console.error(error);
       toast.error(error.message);
+    }
+  };
+
+  // Get user info from token
+  const getUserInfo = async (userToken) => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/user/profile`, { 
+        headers: { token: userToken } 
+      });
+      if (response.data.success) {
+        setUserId(response.data.user._id);
+        localStorage.setItem('userId', response.data.user._id);
+        return response.data.user._id;
+      }
+    } catch (error) {
+      console.error("Error getting user info:", error);
     }
   };
 
@@ -140,9 +150,17 @@ const ShopContextProvider = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       setToken(storedToken);
       getUserCart(storedToken);
+      getUserInfo(storedToken); // Get user info when token is loaded
     }
-  }, [token]);
+  }, []);
 
+  // Also check for userId in localStorage on initial load
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const contextValue = {
     products,
@@ -161,9 +179,13 @@ const ShopContextProvider = ({ children }) => {
     setCompletedOrders,
     token,
     setToken,
+    userId,        // Add userId to context
+    setUserId,     // Add setUserId to context
+    cartItems,
     setCartItems,
     getDiscountedPrice,
     applyDiscount,
+    backendUrl,    // Also add backendUrl for convenience
   };
 
   return (

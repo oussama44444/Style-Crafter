@@ -4,6 +4,7 @@ import axios from 'axios';
 import { backendUrl } from '../App';
 import { toast } from 'react-toastify';
 import { HexColorPicker } from "react-colorful";
+import { FiUpload, FiX, FiPlus, FiTrash2, FiFolder, FiTag, FiDollarSign, FiGrid, FiHash } from 'react-icons/fi';
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
@@ -25,10 +26,10 @@ const Add = ({ token }) => {
   const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
-   
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/category`);
+        // FIX: Changed from /api/category to /api/categories
+        const res = await axios.get(`${backendUrl}/api/categories`);
         setCategories(res.data.categories);
         if (res.data.categories.length > 0) {
           setCategory(res.data.categories[0].name);
@@ -37,13 +38,13 @@ const Add = ({ token }) => {
         }
       } catch (error) {
         console.log(error)
+        toast.error('Failed to load categories');
       }
     };
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    
     const found = categories.find(cat => cat.name === category);
     setSubCategories(found ? found.subCategories : []);
     setSubCategory(found && found.subCategories.length > 0 ? found.subCategories[0] : "");
@@ -60,8 +61,8 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
-      if (showColors && colorVariants.length > 0) {
       
+      if (showColors && colorVariants.length > 0) {
         const colorsArr = colorVariants.map((variant, idx) => ({ color: variant.color }));
         formData.append("colors", JSON.stringify(colorsArr));
         colorVariants.forEach((variant, idx) => {
@@ -75,6 +76,7 @@ const Add = ({ token }) => {
         image3 && formData.append("image3", image3);
         image4 && formData.append("image4", image4);
       }
+      
       const response = await axios.post(`${backendUrl}/api/product/add`, formData, {
         headers: { token }
       });
@@ -102,173 +104,266 @@ const Add = ({ token }) => {
   };
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-3'>
-      <div>
-        <button
-          type='button'
-          className={`mb-2 px-4 py-2 rounded font-bold shadow ${showColors ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-green-500 hover:text-white'}`}
-          onClick={() => setShowColors(v => !v)}
-        >
-          {showColors ? 'Remove Color Variations' : 'Add Color Variations'}
-        </button>
-      </div>
-      {showColors ? (
-        <div className='flex flex-col gap-6 w-full'>
-          {colorVariants.map((variant, idx) => (
-            <div key={idx} className='border p-3 rounded mb-2 w-full'>
-              <div className='flex items-center gap-4 mb-2'>
-                <span>Color:</span>
-                <HexColorPicker color={variant.color} onChange={color => {
-                  setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color } : v));
-                }} />
-                <input type='text' value={variant.color} onChange={e => setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color: e.target.value } : v))} className='w-24 border px-2 py-1 ml-2' />
-                <button type='button' className='ml-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded font-bold shadow' onClick={() => setColorVariants(cv => cv.filter((_, i) => i !== idx))}>Remove</button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+            Add New Product
+          </h1>
+          <p className="text-gray-500">Create a new product for your collection</p>
+        </div>
+
+        <form onSubmit={onSubmitHandler} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+          {/* Color Variations Toggle */}
+          <div className="flex justify-end">
+            <button
+              type='button'
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
+                showColors 
+                  ? 'bg-red-500 hover:bg-red-600 text-white shadow-md' 
+                  : 'bg-gradient-to-r from-gray-800 to-gray-700 text-white hover:from-gray-900 hover:to-gray-800 shadow-md'
+              }`}
+              onClick={() => setShowColors(v => !v)}
+            >
+              <FiGrid />
+              {showColors ? 'Disable Color Variations' : 'Enable Color Variations'}
+            </button>
+          </div>
+
+          {/* Image Upload Section */}
+          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 hover:border-gray-400 transition-colors">
+            {showColors ? (
+              <div className='space-y-6'>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Color Variants</h3>
+                {colorVariants.map((variant, idx) => (
+                  <div key={idx} className='bg-gray-50 rounded-xl p-6 space-y-4'>
+                    <div className='flex items-center justify-between flex-wrap gap-4'>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium text-gray-700">Color:</span>
+                        <HexColorPicker 
+                          color={variant.color} 
+                          onChange={color => {
+                            setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color } : v));
+                          }} 
+                        />
+                        <input 
+                          type='text' 
+                          value={variant.color} 
+                          onChange={e => setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, color: e.target.value } : v))} 
+                          className='w-28 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-500 focus:border-transparent'
+                        />
+                      </div>
+                      <button 
+                        type='button' 
+                        className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2'
+                        onClick={() => setColorVariants(cv => cv.filter((_, i) => i !== idx))}
+                      >
+                        <FiTrash2 /> Remove
+                      </button>
+                    </div>
+                    
+                    <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+                      {[0,1,2,3].map(imgIdx => (
+                        <label key={imgIdx} className="cursor-pointer group">
+                          <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
+                            <img
+                              className='w-full h-full object-cover'
+                              src={variant.images[imgIdx] ? URL.createObjectURL(variant.images[imgIdx]) : assets.upload_area}
+                              alt={`color ${idx} image ${imgIdx}`}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                              <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                            </div>
+                          </div>
+                          <input
+                            type='file'
+                            hidden
+                            onChange={e => {
+                              const file = e.target.files[0];
+                              setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, images: v.images.map((img, j) => j === imgIdx ? file : img) } : v));
+                            }}
+                          />
+                          <p className="text-xs text-center text-gray-500 mt-1">Image {imgIdx + 1}</p>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <button 
+                  type='button' 
+                  className='w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md'
+                  onClick={() => setColorVariants(cv => [...cv, { color: '#000000', images: [null, null, null, null] }])}
+                >
+                  <FiPlus /> Add Color Variant
+                </button>
               </div>
-              <div className='flex gap-2'>
-                {[0,1,2,3].map(imgIdx => (
-                  <label key={imgIdx} htmlFor={`color${idx}_image${imgIdx}`}>
-                    <img
-                      className='w-20 h-20 object-cover border'
-                      src={variant.images[imgIdx] ? URL.createObjectURL(variant.images[imgIdx]) : assets.upload_area}
-                      alt='color variant'
-                    />
-                    <input
-                      type='file'
-                      id={`color${idx}_image${imgIdx}`}
-                      hidden
-                      onChange={e => {
-                        const file = e.target.files[0];
-                        setColorVariants(cv => cv.map((v, i) => i === idx ? { ...v, images: v.images.map((img, j) => j === imgIdx ? file : img) } : v));
-                      }}
-                    />
-                  </label>
+            ) : (
+              <div>
+                <p className='text-gray-700 font-medium mb-3'>Product Images</p>
+                <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+                  {[image1, image2, image3, image4].map((img, index) => (
+                    <label key={index} className="cursor-pointer group">
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-gray-400 transition-all">
+                        <img
+                          className='w-full h-full object-cover'
+                          src={!img ? assets.upload_area : URL.createObjectURL(img)}
+                          alt={`product ${index + 1}`}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+                          <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
+                        </div>
+                      </div>
+                      <input
+                        type="file"
+                        hidden
+                        onChange={(e) => {
+                          const setter = [setImage1, setImage2, setImage3, setImage4][index];
+                          setter(e.target.files[0]);
+                        }}
+                      />
+                      <p className="text-xs text-center text-gray-500 mt-1">Image {index + 1}</p>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Product Details Grid */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Product Name */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiHash /> Product Name
+              </label>
+              <input
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all'
+                type="text"
+                placeholder="e.g., Classic Denim Jacket"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2">Product Description</label>
+              <textarea
+                onChange={(e) => setDescription(e.target.value)}
+                value={description}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all resize-none'
+                rows="4"
+                placeholder="Describe your product..."
+                required
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiFolder /> Category
+              </label>
+              <select
+                onChange={(e) => setCategory(e.target.value)}
+                value={category}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white'
+              >
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* SubCategory */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiTag /> Subcategory
+              </label>
+              <select
+                onChange={(e) => setSubCategory(e.target.value)}
+                value={subCategory}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white'
+              >
+                {subCategories.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Price */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FiDollarSign /> Price
+              </label>
+              <input
+                onChange={(e) => setPrice(e.target.value)}
+                value={price}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent'
+                type="number"
+                placeholder="0.00"
+                required
+              />
+            </div>
+
+            {/* Bestseller Toggle */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Bestseller</label>
+              <button
+                type="button"
+                onClick={() => setBestseller(!bestseller)}
+                className={`w-full px-4 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                  bestseller 
+                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-md' 
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                }`}
+              >
+                {bestseller ? '⭐ Bestseller' : 'Mark as Bestseller'}
+              </button>
+            </div>
+
+            {/* Sizes */}
+            <div className="md:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2">Sizes <span className='text-gray-400'>(Optional)</span></label>
+              <div className='flex flex-wrap gap-3'>
+                {["S", "M", "L", "XL", "XXL"].map((size) => (
+                  <button
+                    type="button"
+                    key={size}
+                    onClick={() =>
+                      setSizes((prev) =>
+                        prev.includes(size)
+                          ? prev.filter((item) => item !== size)
+                          : [...prev, size]
+                      )
+                    }
+                    className={`w-14 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                      sizes.includes(size) 
+                        ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white shadow-md transform scale-105' 
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {size}
+                  </button>
                 ))}
               </div>
             </div>
-          ))}
-          <button type='button' className='mt-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded font-bold shadow' onClick={() => setColorVariants(cv => [...cv, { color: '#000000', images: [null, null, null, null] }])}>+ Add Color</button>
-        </div>
-      ) : (
-        <div>
-          <p className='mb-2'>Upload Image</p>
-          <div className='flex gap-2'>
-            {[image1, image2, image3, image4].map((img, index) => (
-              <label key={index} htmlFor={`image${index + 1}`}>
-                <img
-                  className='w-20'
-                  src={!img ? assets.upload_area : URL.createObjectURL(img)}
-                  alt=""
-                />
-                <input
-                  type="file"
-                  id={`image${index + 1}`}
-                  hidden
-                  onChange={(e) => {
-                    const setter = [setImage1, setImage2, setImage3, setImage4][index];
-                    setter(e.target.files[0]);
-                  }}
-                />
-              </label>
-            ))}
           </div>
-        </div>
-      )}
 
-      <div className='w-full'>
-        <p className='mb-2'>Product Name</p>
-        <input
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          className='w-full max-w-[500px] px-3 py-2'
-          type="text"
-          placeholder='Provide Name'
-          required
-        />
-      </div>
-
-      <div className='w-full'>
-        <p className='mb-2'>Product Description</p>
-        <textarea
-          onChange={(e) => setDescription(e.target.value)}
-          value={description}
-          className='w-full max-w-[500px] px-3 py-2'
-          placeholder='Provide description'
-          required
-        />
-      </div>
-
-      <div>
-        <div>
-          <p className='mb-2'>Product Category</p>
-          <select
-            onChange={(e) => {
-              const selected = e.target.value;
-              setCategory(selected);
-            }}
-            value={category}
-            className='w-full px-3 py-2'
-          >
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <p className='mb-2'>Product SubCategory</p>
-          <select
-            onChange={(e) => setSubCategory(e.target.value)}
-            value={subCategory}
-            className='w-full px-3 py-2'
-          >
-            {subCategories.map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <p className='mb-2'>Price</p>
-          <input
-            onChange={(e) => setPrice(e.target.value)}
-            value={price}
-            className='w-full px-3 py-2'
-            type="number"
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <p className='mb-2'>Product Sizes <span className='text-gray-400'>(optional)</span></p>
-        <div className='flex gap-3'>
-          {["S", "M", "L", "XL", "XXL"].map((size) => (
-            <div
-              key={size}
-              onClick={() =>
-                setSizes((prev) =>
-                  prev.includes(size)
-                    ? prev.filter((item) => item !== size)
-                    : [...prev, size]
-                )
-              }
+          {/* Submit Button */}
+          <div className="flex justify-end pt-4">
+            <button 
+              type='submit' 
+              className='px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2'
             >
-              <p
-                className={`${
-                  sizes.includes(size) ? "bg-red-100" : "bg-slate-200"
-                } px-3 py-1 cursor-pointer`}
-              >
-                {size}
-              </p>
-            </div>
-          ))}
-        </div>
+              <FiPlus size={20} />
+              Add Product
+            </button>
+          </div>
+        </form>
       </div>
-
-    
-
-      <button type='submit' className='w-28 py-3 mt-4 bg-green-500 hover:bg-green-600 text-white rounded font-bold shadow'>Add</button>
-    </form>
+    </div>
   );
 };
 
